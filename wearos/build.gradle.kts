@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.horologist.compose.tools)
     implementation(libs.horologist.tiles)
     implementation(libs.androidx.watchface.complications.data.source.ktx)
+    implementation(project(":lib"))
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)

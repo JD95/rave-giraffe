@@ -41,6 +41,7 @@ import androidx.wear.compose.material.Text
 import androidx.wear.tooling.preview.devices.WearDevices
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.wspcgir.rave_giraffe.lib.Event
 import org.wspcgir.rave_giraffe.wearos.presentation.theme.RaveGiraffeTheme
 import java.time.Duration
 import java.time.LocalDateTime
@@ -54,31 +55,39 @@ class MainActivity : ComponentActivity() {
         setTheme(android.R.style.Theme_DeviceDefault)
 
         setContent {
-            WearApp("Android")
+            WearApp(
+                emptyList()
+            )
         }
     }
 }
 
+fun buildInfo(sets: List<Event>): List<StageInfo> {
+    val stages = sets.map { it.stageName }.toSet().toList()
+    return stages
+        .map { stage ->
+            val setsAtStage = sets
+                .filter { set -> set.stageName == stage }
+                .sortedBy { it.startTime }
+
+            val setsWithEnd = setsAtStage
+                .zip(setsAtStage.drop(1).plus(null))
+                .map {
+                    val name = it.first.artistName
+                    val startTime = it.first.startTime
+                    val endTime = it.second?.startTime
+                        ?: it.first.startTime.withHour(6).withMinute(0)
+                    TimeInfo(name, startTime, endTime)
+                }
+            StageInfo(stage, setsWithEnd)
+        }
+        .sortedBy { it.stageName }
+}
+
 @Composable
-fun WearApp(greetingName: String) {
+fun WearApp(sets: List<Event>) {
     RaveGiraffeTheme {
-        val start = LocalDateTime.of(2025, 4, 21, 12, 2, 0)
-        val stages = listOf(
-            StageInfo(
-                "Cosmic Meadow",
-                listOf(
-                    TimeInfo("DJ Ron", start, start.plusHours(1)),
-                    TimeInfo("Tiesto", start.plusHours(1), start.plusHours(2))
-                )
-            ),
-            StageInfo(
-                "Kinetic Field",
-                listOf(
-                    TimeInfo("DeadMau5", start, start.plusHours(1).plusMinutes(30)),
-                    TimeInfo("Steve Aoki", start.plusHours(1).plusMinutes(30), start.plusHours(2))
-                )
-            )
-        )
+        val stages = buildInfo(sets)
         val pageState = rememberPagerState(initialPage = 0, pageCount = { stages.size })
         VerticalPager(
             state = pageState,
@@ -281,7 +290,7 @@ fun SetDisplay(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        val icon = when(status) {
+        val icon = when (status) {
             is SetStatus.Coming -> Icons.Filled.BrowseGallery
             is SetStatus.Progressing -> Icons.Filled.Audiotrack
             is SetStatus.Done -> Icons.Filled.Check
@@ -296,5 +305,18 @@ fun SetDisplay(
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
-    WearApp("Preview Android")
+    WearApp(
+        listOf(
+            Event(
+                "Cosmic Meadow",
+                "DJ Ron",
+                LocalDateTime.of(2025, 4, 21, 21, 0, 0, 0)
+            ),
+            Event(
+                "Cosmic Meadow",
+                "Tiesto",
+                LocalDateTime.of(2025, 4, 21, 22, 30, 0, 0)
+            )
+        )
+    )
 }
