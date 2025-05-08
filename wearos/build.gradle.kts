@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "org.wspcgir.rave_giraffe.wearos"
+    namespace = "org.wspcgir.rave_giraffe"
     compileSdk = 35
 
     defaultConfig {
-        applicationId = "org.wspcgir.rave_giraffe.wearos"
+        applicationId = "org.wspcgir.rave_giraffe"
         minSdk = 30
         targetSdk = 35
         versionCode = 1
@@ -57,6 +57,7 @@ dependencies {
     implementation(libs.horologist.compose.tools)
     implementation(libs.horologist.tiles)
     implementation(libs.androidx.watchface.complications.data.source.ktx)
+    implementation(libs.kotlinx.serialization)
     implementation(project(":lib"))
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)

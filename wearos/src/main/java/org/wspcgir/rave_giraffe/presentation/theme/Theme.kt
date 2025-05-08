@@ -1,4 +1,4 @@
-package org.wspcgir.rave_giraffe.wearos.presentation.theme
+package org.wspcgir.rave_giraffe.presentation.theme
 
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.MaterialTheme

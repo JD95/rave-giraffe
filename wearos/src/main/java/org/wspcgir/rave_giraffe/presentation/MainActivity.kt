@@ -3,7 +3,7 @@
  * most up to date changes to the libraries and their usages.
  */
 
-package org.wspcgir.rave_giraffe.wearos.presentation
+package org.wspcgir.rave_giraffe.presentation
 
 import android.os.Bundle
 import android.util.Log
@@ -24,6 +24,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,7 +43,8 @@ import androidx.wear.tooling.preview.devices.WearDevices
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.wspcgir.rave_giraffe.lib.Event
-import org.wspcgir.rave_giraffe.wearos.presentation.theme.RaveGiraffeTheme
+import org.wspcgir.rave_giraffe.EventMessages
+import org.wspcgir.rave_giraffe.presentation.theme.RaveGiraffeTheme
 import java.time.Duration
 import java.time.LocalDateTime
 
@@ -55,9 +57,8 @@ class MainActivity : ComponentActivity() {
         setTheme(android.R.style.Theme_DeviceDefault)
 
         setContent {
-            WearApp(
-                emptyList()
-            )
+            val latestEvents by EventMessages.eventMessages.collectAsState(emptyList())
+            WearApp(latestEvents)
         }
     }
 }
@@ -117,7 +118,7 @@ fun Stage(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        val pageState = rememberPagerState { 2 }
+        val pageState = rememberPagerState { 1 }
         val scope = rememberCoroutineScope()
         HorizontalPager(
             state = pageState

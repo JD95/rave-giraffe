@@ -1,4 +1,4 @@
-package org.wspcgir.rave_giraffe.wearos.complication
+package org.wspcgir.rave_giraffe.complication
 
 import androidx.wear.watchface.complications.data.ComplicationData
 import androidx.wear.watchface.complications.data.ComplicationType

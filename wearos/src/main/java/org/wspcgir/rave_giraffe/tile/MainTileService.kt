@@ -1,4 +1,4 @@
-package org.wspcgir.rave_giraffe.wearos.tile
+package org.wspcgir.rave_giraffe.tile
 
 import android.content.Context
 import androidx.wear.protolayout.ColorBuilders.argb
