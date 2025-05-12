@@ -16,7 +16,9 @@ import androidx.compose.foundation.MutatePriority
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.ScrollScope
 import androidx.compose.foundation.gestures.ScrollableState
+import androidx.compose.foundation.gestures.TargetedFlingBehavior
 import androidx.compose.foundation.gestures.scrollBy
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -180,19 +182,56 @@ class PagerScrollHandler(
 @Composable
 fun WearApp(sets: List<Event>) {
     RaveGiraffeTheme {
-        val stages = buildInfo(sets)
-        val pageState = rememberPagerState(initialPage = 0, pageCount = { stages.size })
-        VerticalPager(
-            state = pageState,
-            modifier = Modifier
-                .fillMaxSize()
-        ) { n ->
-            Stage(
-                info = stages[n],
-                nextStageAvailable = n < stages.lastIndex,
-                previousStageAvailable = n > 0
-            )
-       }
+        if (sets.isNotEmpty()) {
+            val stages = buildInfo(sets)
+            val pageState = rememberPagerState(initialPage = 0, pageCount = { stages.size })
+            val scope = rememberCoroutineScope()
+            val pagerScrollHandler = remember {
+                PagerScrollHandler(stages.size, pageState, scope)
+            }
+            val focusRequester = remember { FocusRequester() }
+            LaunchedEffect(pageState.currentPage) {
+                focusRequester.requestFocus()
+            }
+            VerticalPager(
+                state = pageState,
+                flingBehavior = object : TargetedFlingBehavior {
+                    override suspend fun ScrollScope.performFling(
+                        initialVelocity: Float,
+                        onRemainingDistanceUpdated: (Float) -> Unit
+                    ): Float {
+                        onRemainingDistanceUpdated(0f)
+                        return 0f
+                    }
+                },
+                userScrollEnabled = false,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .onRotaryScrollEvent {
+                        Log.i("SCROLL", "onRotaryScrollEvent")
+                        scope.launch {
+                            pagerScrollHandler.scrollBy(it.verticalScrollPixels)
+                        }
+                        true
+                    }
+                    .focusRequester(focusRequester)
+                    .focusable()
+            ) { n ->
+                Stage(
+                    info = stages[n],
+                    nextStageAvailable = n < stages.lastIndex,
+                    previousStageAvailable = n > 0
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text("No Content Loaded")
+            }
+        }
     }
 }
 
@@ -207,32 +246,16 @@ fun Stage(
     nextStageAvailable: Boolean,
     previousStageAvailable: Boolean
 ) {
+    val scope = rememberCoroutineScope()
+    val pageState = rememberPagerState(initialPage = 0, pageCount = { info.setTimes.size })
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        val pageState = rememberPagerState (0 , pageCount = { info.setTimes.size })
-        val scope = rememberCoroutineScope()
-        val pagerScrollHandler = remember {
-            PagerScrollHandler(info.setTimes.size, pageState, scope)
-        }
-        val focusRequester = remember { FocusRequester() }
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
-        }
         HorizontalPager(
             state = pageState,
             modifier = Modifier
-                .onRotaryScrollEvent {
-                    Log.i("SCROLL", "onRotaryScrollEvent")
-                    scope.launch {
-                        pagerScrollHandler.scrollBy(it.verticalScrollPixels)
-                    }
-                    true
-                }
-                .focusRequester(focusRequester)
-                .focusable()
         ) { n ->
             Time(
                 stageName = info.stageName,
