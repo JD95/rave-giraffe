@@ -52,6 +52,7 @@ dependencies {
     implementation(libs.kotlinx.serialization)
     implementation(libs.play.services.wearable)
     implementation(project(":lib"))
+    implementation(libs.kotlin.csv.jvm)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

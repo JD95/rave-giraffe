@@ -10,6 +10,7 @@ import org.wspcgir.rave_giraffe.lib.Event
 import org.wspcgir.rave_giraffe.lib.EventJson
 import org.wspcgir.rave_giraffe.lib.MESSAGE_PATH
 import org.wspcgir.rave_giraffe.lib.dtFormat
+import java.io.OutputStreamWriter
 import java.time.LocalDateTime
 
 object EventMessages {
@@ -20,6 +21,8 @@ object EventMessages {
         _eventMessages.tryEmit(msg)
     }
 }
+
+val EVENT_DATA_FILE = "event-data.json"
 
 class MessageListenerService : WearableListenerService() {
 
@@ -34,7 +37,12 @@ class MessageListenerService : WearableListenerService() {
         if (event.path == MESSAGE_PATH) {
             Log.i("MESSAGES", "Was my message!")
             val data = Json.decodeFromString<List<EventJson>>(String(event.data))
-
+            val outputStreamWriter = OutputStreamWriter(applicationContext.openFileOutput(
+                EVENT_DATA_FILE, MODE_PRIVATE))
+            val stringData = String(event.data)
+            Log.i("MESSAGES", stringData)
+            outputStreamWriter.write(stringData)
+            outputStreamWriter.close();
             EventMessages.emit(data.map {
                 Event(it.stageName, it.artistName, LocalDateTime.parse(it.startTime, dtFormat))
             })

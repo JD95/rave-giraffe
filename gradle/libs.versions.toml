@@ -54,6 +54,7 @@ horologist-compose-tools = { group = "com.google.android.horologist", name = "ho
 horologist-tiles = { group = "com.google.android.horologist", name = "horologist-tiles", version.ref = "horologistTiles" }
 androidx-watchface-complications-data-source-ktx = { group = "androidx.wear.watchface", name = "watchface-complications-data-source-ktx", version.ref = "watchfaceComplicationsDataSourceKtx" }
 kotlinx-serialization = { group = "org.jetbrains.kotlinx", name = "kotlinx-serialization-json", version = "1.8.0" }
+kotlin-csv-jvm = { group = "com.jsoizo", name = "kotlin-csv-jvm", version = "1.10.0" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

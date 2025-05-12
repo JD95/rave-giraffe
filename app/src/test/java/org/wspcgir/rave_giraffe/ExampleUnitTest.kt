@@ -3,6 +3,8 @@ package org.wspcgir.rave_giraffe
 import org.junit.Test
 
 import org.junit.Assert.*
+import org.wspcgir.rave_giraffe.lib.dtFormat
+import java.time.LocalDateTime
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -11,7 +13,7 @@ import org.junit.Assert.*
  */
 class ExampleUnitTest {
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun date_parsing() {
+        LocalDateTime.parse("2025-05-06 19:00", dtFormat)
     }
 }
